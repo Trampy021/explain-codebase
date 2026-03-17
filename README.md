@@ -83,7 +83,7 @@ explain-codebase . --deep
 Use this when you want to understand one specific file in project context:
 
 ```bash
-explain-codebase file src/services/order_service.ts
+explain-codebase file src/services/api_server.py
 ```
 
 ### Onboarding path
