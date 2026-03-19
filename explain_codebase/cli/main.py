@@ -28,7 +28,7 @@ from explain_codebase.parsers.js_parser import JavaScriptParser
 from explain_codebase.parsers.python_parser import PythonParser
 from explain_codebase.parsers.ts_parser import TypeScriptParser
 from explain_codebase.renderers.cli_renderer import CliRenderer
-from explain_codebase.renderers.graph_renderer import GraphRenderer
+from explain_codebase.renderers.graph_renderer import GraphRenderer, GraphViewOptions
 from explain_codebase.renderers.html_report_renderer import HtmlReportRenderer
 from explain_codebase.renderers.json_renderer import JsonRenderer
 from explain_codebase.scanner.project_scanner import ProjectScanner
@@ -50,6 +50,11 @@ class PlainHelpCommand(click.Command):
             "  --deep              Show architecture issues",
             "  --json              Output analysis as JSON",
             "  --graph             Generate dependency_graph.html",
+            "  --full              Render the full file-level graph",
+            "  --architecture      Render architecture view graph",
+            "  --entrypoint        Render entrypoint flow graph",
+            "  --risk              Render risk-focused graph",
+            "  --side-effects      Render side-effects graph",
             "  --report            Generate codebase_report.html",
             "  --ci                Exit with code 1 when architecture issues are detected",
             "  --max-files N       Limit scanned source files",
@@ -60,6 +65,10 @@ class PlainHelpCommand(click.Command):
             f"  {program_name} https://github.com/user/repo",
             f"  {program_name} . --verbose",
             f"  {program_name} . --deep",
+            f"  {program_name} . --graph --architecture",
+            f"  {program_name} . --graph --entrypoint",
+            f"  {program_name} . --graph --risk",
+            f"  {program_name} . --graph --full",
             f"  {program_name} onboarding .",
             f"  {program_name} file src/services/user_service.ts",
         ]
@@ -139,6 +148,7 @@ class Analyzer:
 
     def generate_explanation(self, project_info: ProjectInfo, graph) -> AnalysisResult:
         file_roles = {file.path: file.role or "unknown" for file in project_info.files}
+        file_side_effects = {file.path: list(file.side_effects) for file in project_info.files}
         entrypoints = self.entrypoint_finder.find(project_info.files)
         core_modules, core_rankings, centrality = self.core_module_detector.detect(graph)
         side_effect_modules = self.side_effect_detector.detect(project_info.files)
@@ -169,6 +179,7 @@ class Analyzer:
             architecture_issues=architecture_issues,
             execution_flow=execution_flow,
             file_roles=file_roles,
+            file_side_effects=file_side_effects,
             centrality=centrality,
             summary="",
         )
@@ -235,6 +246,11 @@ def main(
     deep: bool = False,
     max_files: int | None = None,
     graph: bool = False,
+    graph_full: bool = False,
+    graph_architecture: bool = False,
+    graph_entrypoint: bool = False,
+    graph_risk: bool = False,
+    graph_side_effects: bool = False,
     report: bool = False,
     ci: bool = False,
 ) -> None:
@@ -266,6 +282,11 @@ def main(
         deep=deep,
         max_files=max_files,
         graph=graph,
+        graph_full=graph_full,
+        graph_architecture=graph_architecture,
+        graph_entrypoint=graph_entrypoint,
+        graph_risk=graph_risk,
+        graph_side_effects=graph_side_effects,
         report=report,
         ci=ci,
     )
@@ -283,6 +304,11 @@ def main(
 @click.option("--deep", is_flag=True, help="Show architecture issues")
 @click.option("--max-files", type=int, default=None, metavar="N", help="Limit scanned source files")
 @click.option("--graph", is_flag=True, help="Generate dependency_graph.html")
+@click.option("--full", "graph_full", is_flag=True, help="Render the full file-level graph")
+@click.option("--architecture", "graph_architecture", is_flag=True, help="Render architecture view graph")
+@click.option("--entrypoint", "graph_entrypoint", is_flag=True, help="Render entrypoint flow graph")
+@click.option("--risk", "graph_risk", is_flag=True, help="Render risk-focused graph")
+@click.option("--side-effects", "graph_side_effects", is_flag=True, help="Render side-effects graph")
 @click.option("--report", is_flag=True, help="Generate codebase_report.html")
 @click.option("--ci", is_flag=True, help="Exit with code 1 when architecture issues are detected")
 def app(
@@ -293,6 +319,11 @@ def app(
     deep: bool,
     max_files: int | None,
     graph: bool,
+    graph_full: bool,
+    graph_architecture: bool,
+    graph_entrypoint: bool,
+    graph_risk: bool,
+    graph_side_effects: bool,
     report: bool,
     ci: bool,
 ) -> None:
@@ -304,6 +335,11 @@ def app(
         deep=deep,
         max_files=max_files,
         graph=graph,
+        graph_full=graph_full,
+        graph_architecture=graph_architecture,
+        graph_entrypoint=graph_entrypoint,
+        graph_risk=graph_risk,
+        graph_side_effects=graph_side_effects,
         report=report,
         ci=ci,
     )
@@ -341,6 +377,11 @@ def _run_project_analysis(
     deep: bool,
     max_files: int | None,
     graph: bool,
+    graph_full: bool,
+    graph_architecture: bool,
+    graph_entrypoint: bool,
+    graph_risk: bool,
+    graph_side_effects: bool,
     report: bool,
     ci: bool,
 ) -> None:
@@ -349,6 +390,16 @@ def _run_project_analysis(
     resolved: ResolvedTarget | None = None
 
     try:
+        graph_options = _resolve_graph_options(
+            graph=graph,
+            report=report,
+            graph_full=graph_full,
+            graph_architecture=graph_architecture,
+            graph_entrypoint=graph_entrypoint,
+            graph_risk=graph_risk,
+            graph_side_effects=graph_side_effects,
+        )
+
         resolved = resolver.resolve(target)
 
         typer.echo("[3/5] Scanning project files...", err=True)
@@ -360,7 +411,13 @@ def _run_project_analysis(
         typer.echo("[5/5] Generating explanation...", err=True)
         result = analyzer.generate_explanation(project_info, dependency_graph)
 
-        _generate_optional_outputs(result, dependency_graph, graph=graph, report=report)
+        _generate_optional_outputs(
+            result,
+            dependency_graph,
+            graph=graph,
+            report=report,
+            graph_options=graph_options,
+        )
 
         if json_output:
             typer.echo(JsonRenderer().render(result))
@@ -441,18 +498,60 @@ def _run_file_command(target_file: str, json_output: bool, max_files: int | None
     CliRenderer().render_file_explanation(explanation)
 
 
-def _generate_optional_outputs(result: AnalysisResult, dependency_graph, graph: bool, report: bool) -> None:
+def _resolve_graph_options(
+    graph: bool,
+    report: bool,
+    graph_full: bool,
+    graph_architecture: bool,
+    graph_entrypoint: bool,
+    graph_risk: bool,
+    graph_side_effects: bool,
+) -> GraphViewOptions:
+    selected_modes = [
+        mode
+        for mode, enabled in [
+            ("file", graph_full),
+            ("architecture", graph_architecture),
+            ("entrypoint", graph_entrypoint),
+            ("risk", graph_risk),
+            ("side-effects", graph_side_effects),
+        ]
+        if enabled
+    ]
+
+    if len(selected_modes) > 1:
+        raise typer.BadParameter("Graph mode flags cannot be combined.")
+
+    if selected_modes and not (graph or report):
+        raise typer.BadParameter("Graph mode flags require --graph or --report.")
+
+    if graph_full and selected_modes != ["file"]:
+        raise typer.BadParameter("--full cannot be combined with other graph modes.")
+
+    return GraphViewOptions(
+        mode=selected_modes[0] if selected_modes else "architecture",
+        full=graph_full,
+    )
+
+
+def _generate_optional_outputs(
+    result: AnalysisResult,
+    dependency_graph,
+    graph: bool,
+    report: bool,
+    graph_options: GraphViewOptions,
+) -> None:
     output_root = Path.cwd()
 
     if graph:
         graph_path = output_root / "dependency_graph.html"
-        GraphRenderer().render(result, dependency_graph, graph_path)
+        GraphRenderer().render(result, dependency_graph, graph_path, options=graph_options)
         result.dependency_graph_output = str(graph_path.resolve())
         typer.echo(f"Dependency graph written to {graph_path.resolve()}", err=True)
 
     if report:
         report_path = output_root / "codebase_report.html"
-        HtmlReportRenderer().render(result, dependency_graph, report_path)
+        HtmlReportRenderer().render(result, dependency_graph, report_path, graph_options=graph_options)
         result.html_report_output = str(report_path.resolve())
         typer.echo(f"HTML report written to {report_path.resolve()}", err=True)
 

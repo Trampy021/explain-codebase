@@ -54,6 +54,7 @@ class AnalysisResult(BaseModel):
     architecture_issues: list[ArchitectureIssue] = Field(default_factory=list)
     execution_flow: list[list[str]] = Field(default_factory=list)
     file_roles: dict[str, str] = Field(default_factory=dict)
+    file_side_effects: dict[str, list[str]] = Field(default_factory=dict)
     centrality: dict[str, int] = Field(default_factory=dict)
     dependency_graph_output: str | None = None
     html_report_output: str | None = None

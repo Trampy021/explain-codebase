@@ -6,6 +6,7 @@ from pathlib import Path
 import networkx as nx
 
 from explain_codebase.models.analysis_result import AnalysisResult
+from explain_codebase.renderers.graph_renderer import GraphViewOptions
 from explain_codebase.renderers.graph_renderer import GraphRenderer
 
 
@@ -13,8 +14,19 @@ class HtmlReportRenderer:
     def __init__(self) -> None:
         self.graph_renderer = GraphRenderer()
 
-    def render(self, result: AnalysisResult, graph: nx.DiGraph, output_path: Path) -> Path:
-        graph_fragment = self.graph_renderer.build_graph_fragment(result, graph, container_id="architecture-graph")
+    def render(
+        self,
+        result: AnalysisResult,
+        graph: nx.DiGraph,
+        output_path: Path,
+        graph_options: GraphViewOptions | None = None,
+    ) -> Path:
+        graph_fragment = self.graph_renderer.build_graph_fragment(
+            result,
+            graph,
+            container_id="architecture-graph",
+            options=graph_options,
+        )
         html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>

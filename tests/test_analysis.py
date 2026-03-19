@@ -241,6 +241,60 @@ def test_graph_and_report_outputs_are_generated(monkeypatch, tmp_path, capsys) -
     assert '"html_report_output":' in captured.out
 
 
+def test_graph_output_includes_new_views_and_controls(monkeypatch, tmp_path, capsys) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    cli_main(
+        target=str(FIXTURES / "fastapi_example"),
+        extra_args=[],
+        json_output=True,
+        verbose=False,
+        max_files=None,
+        graph=True,
+        graph_entrypoint=True,
+        report=False,
+        ci=False,
+    )
+
+    html = (tmp_path / "dependency_graph.html").read_text(encoding="utf-8")
+    assert "Architecture view" in html
+    assert "File view" in html
+    assert "Entrypoint flow" in html
+    assert "Side effects view" in html
+    assert "Risk view" in html
+    assert "Search file" in html
+    assert "Legend" in html
+    assert "dependency_graph.png" in html
+    assert '"defaultView": "entrypoint"' in html
+
+
+def test_graph_mode_flags_require_graph_or_report() -> None:
+    with pytest.raises(typer.BadParameter):
+        cli_main(
+            target=str(FIXTURES / "fastapi_example"),
+            json_output=False,
+            verbose=False,
+            deep=False,
+            max_files=None,
+            graph=False,
+            graph_entrypoint=True,
+        )
+
+
+def test_graph_mode_flags_cannot_be_combined() -> None:
+    with pytest.raises(typer.BadParameter):
+        cli_main(
+            target=str(FIXTURES / "fastapi_example"),
+            json_output=False,
+            verbose=False,
+            deep=False,
+            max_files=None,
+            graph=True,
+            graph_entrypoint=True,
+            graph_risk=True,
+        )
+
+
 def test_ci_mode_fails_on_architecture_issues(tmp_path) -> None:
     (tmp_path / "main.py").write_text("import a\n", encoding="utf-8")
     (tmp_path / "a.py").write_text("import b\n", encoding="utf-8")
@@ -271,6 +325,11 @@ def test_help_output_uses_plain_cli_style() -> None:
     assert "Arguments" in result.output
     assert "Options" in result.output
     assert "Examples" in result.output
+    assert "--full" in result.output
+    assert "--architecture" in result.output
+    assert "--entrypoint" in result.output
+    assert "--risk" in result.output
+    assert "--side-effects" in result.output
     assert "╭" not in result.output
     assert "│" not in result.output
 

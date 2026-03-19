@@ -4,23 +4,21 @@ import subprocess
 from pathlib import Path
 
 try:
-    from pathspec import PathSpec
-    from pathspec.patterns import GitWildMatchPattern
+    from pathspec.gitignore import GitIgnoreSpec
 except ImportError:  # pragma: no cover - dependency is declared in pyproject.toml
-    PathSpec = None  # type: ignore[assignment]
-    GitWildMatchPattern = None  # type: ignore[assignment]
+    GitIgnoreSpec = None  # type: ignore[assignment]
 
 
-def load_gitignore_spec(root_path: Path) -> PathSpec | None:
+def load_gitignore_spec(root_path: Path) -> GitIgnoreSpec | None:
     gitignore_path = root_path / ".gitignore"
-    if PathSpec is None or GitWildMatchPattern is None or not gitignore_path.is_file():
+    if GitIgnoreSpec is None or not gitignore_path.is_file():
         return None
 
     patterns = gitignore_path.read_text(encoding="utf-8").splitlines()
-    return PathSpec.from_lines(GitWildMatchPattern, patterns)
+    return GitIgnoreSpec.from_lines(patterns)
 
 
-def is_ignored_by_gitignore(relative_path: Path, spec: PathSpec | None, is_dir: bool = False) -> bool:
+def is_ignored_by_gitignore(relative_path: Path, spec: GitIgnoreSpec | None, is_dir: bool = False) -> bool:
     if spec is None:
         return False
 

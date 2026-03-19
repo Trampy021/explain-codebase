@@ -34,6 +34,19 @@ What's new:
 
 This makes the tool much more useful on real-world repositories by excluding ignored, temporary, and untracked files from the analysis.
 
+##№ v0.1.4
+
+Improved dependency graph visualization.
+
+What’s new:
+
+- Redesigned dependency graph with a cleaner, more readable layout
+- Improved node spacing and reduced visual noise
+- Better handling of large repositories
+- Smoother interactions and graph rendering
+
+The graph is now easier to read and better represents the structure of real-world codebases.
+
 ## Installation
 
 ### Requirements
